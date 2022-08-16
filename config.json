@@ -1,0 +1,6 @@
+{
+    "TimeShift": 5,
+    "EpicentralShift": 15,
+    "OutputCommonEventsCatalog": true,
+    "CatalogOutputFormat": "NORDIC"
+}

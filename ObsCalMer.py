@@ -2,14 +2,19 @@ import obspy as obs
 from obspy.geodetics.base import gps2dist_azimuth as gps
 from obspy.core.event import Catalog
 from tqdm import tqdm
+from json import load
 import warnings
 warnings.filterwarnings("ignore")
+
+with open("config.json") as f:
+    configs = load(f)
 
 catRef = obs.read_events("cat1.dat")
 catCom = obs.read_events("cat2.dat")
 catTar = Catalog()
-timeShift = 5 # acceptable time shift between two common events (s)
-epicShift = 10 #  acceptable epicenter shift between two common events (km)
+catComEvents = Catalog()
+timeShift = configs["TimeShift"] # acceptable time shift between two common events (s)
+epicShift = configs["EpicentralShift"] #  acceptable epicenter shift between two common events (km)
 
 def computeDiff(RefEvent, ComEvent):
     """Compute time and epicenter difference between "reference" and "compared" events,
@@ -83,12 +88,16 @@ for eventID, RefEvent in enumerate(tqdm(catRef)):
     for ComEvent in catCom:
         if computeDiff(RefEvent, ComEvent):
             RefEvent, numNewPhaseP, numNewPhaseS, numRegardedPhases = updateEvent(RefEvent, ComEvent, numNewPhaseP, numNewPhaseS, numRegardedPhases)
+            catComEvents.append(RefEvent)
             numCommonEvents += 1
             break
     catTar.append(RefEvent)
 
 catTar.write("updatedCatalog.dat", format="NORDIC")
+if configs["OutputCommonEventsCatalog"]:
+    catComEvents.write("commonEventsCatalog.dat", format="NORDIC")
 
+# summary
 print("+++ Number of common events: {numCommonEvents}".format(numCommonEvents=numCommonEvents))
 print("+++ Number of new P phases: {numNewPhaseP}".format(numNewPhaseP=numNewPhaseP))
 print("+++ Number of new S phases: {numNewPhaseS}".format(numNewPhaseS=numNewPhaseS))
