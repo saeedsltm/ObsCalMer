@@ -1,6 +1,9 @@
 {
+    "ReferenceCatalogFileName":"fin_irsc.out",
+    "ComparedCatalogFileName":"fin_iiees.out",
     "TimeShift": 5,
     "EpicentralShift": 15,
+    "ReplaceNewPhaseWithHigherWeight": true,
     "OutputCommonEventsCatalog": true,
     "CatalogOutputFormat": "NORDIC"
 }
