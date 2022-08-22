@@ -2,7 +2,7 @@
     "ReferenceCatalogFileName":"fin_irsc.out",
     "ComparedCatalogFileName":"fin_iiees.out",
     "OriginTimeShift": 5,
-    "EpicentralShift": 15,
+    "EpicentralShift": 20,
     "AddPhaseP": true,
     "AddPhaseS": true,
     "AddAmplitude": false,

@@ -28,6 +28,8 @@ class ObspyCatalogMerger():
             ComEvent (obspy.event): compared event
 
         Returns:
+            float: epicenters difference in km,
+            float: origin times difference in s,
             bool: true if two events are common
         """
         RefEventPreferredOrigin = RefEvent.preferred_origin()
@@ -39,9 +41,9 @@ class ObspyCatalogMerger():
         lon2 = ComEventPreferredOrigin.longitude
         dD = abs(gps(lat1=lat1, lon1=lon1, lat2=lat2, lon2=lon2)[0]*1e-3)
         if dT < self.OriginTimeShift and dD < self.EpicShift:
-            return True
+            return dD, dT, True
         else:
-            return False
+            return dD,dT, False
 
 
     def ReadExtra(self, pick):
@@ -183,14 +185,19 @@ class ObspyCatalogMerger():
         self.numNewPhaseS = 0
         self.numNewAmplitudes = 0
         self.numRegardedPhases = 0
+        self.TotalD = 0
+        self.TotalT = 0
         print("+++ Starts merging catalogs...")
         for _, RefEvent in enumerate(tqdm(self.RefCat)):
             for ComEvent in self.ComCat:
-                if self.ComputeDiff(RefEvent, ComEvent):
+                D, T, isCommon = self.ComputeDiff(RefEvent, ComEvent)
+                if isCommon:
                     RefEvent, self.numNewPhaseP, self.numNewPhaseS, self.numRegardedPhases, self.numNewAmplitudes = self.UpdateEvent(
                         RefEvent, ComEvent, self.numNewPhaseP, self.numNewPhaseS, self.numRegardedPhases, self.numNewAmplitudes)
                     self.ComEventsCat.append(RefEvent)
                     self.numCommonEvents += 1
+                    self.TotalD += D
+                    self.TotalT += T
                     break
             self.TarCat.append(RefEvent)
 
@@ -204,6 +211,10 @@ class ObspyCatalogMerger():
         with open("summary.dat", "w") as f:
             f.write(
                 "+++ Number of common events: {numCommonEvents}\n".format(numCommonEvents=self.numCommonEvents))
+            f.write(
+                "+++ Mean difference in epicenters of common events: {TotalD:.2f} km\n".format(TotalD=self.TotalD/self.numCommonEvents))  
+            f.write(
+                "+++ Mean difference in origin time of common events: {TotalT:.2f} s\n".format(TotalT=self.TotalT/self.numCommonEvents))                              
             f.write(
                 "+++ Number of new P phases: {numNewPhaseP}\n".format(numNewPhaseP=self.numNewPhaseP))
             f.write(

@@ -1,7 +1,9 @@
-+++ Number of common events: 120
-+++ Number of new P phases: 1320
-+++ Number of new S phases: 4
++++ Number of common events: 131
++++ Mean difference in epicenters of common events: 9.47 km
++++ Mean difference in origin time of common events: 0.67 s
++++ Number of new P phases: 1419
++++ Number of new S phases: 6
 +++ Number of new amplitudes: 0
-+++ Number of regarded phases: 1137
++++ Number of regarded phases: 1221
 +++ updated catalog file: 'updatedCatalog.dat'
 +++ common-events-only catalog file: 'commonEventsCatalog.dat'
